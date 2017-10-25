@@ -34,12 +34,12 @@ jQuery(function($){
 					var liking = false;
 					likedContent.push( post_id );
 					Cookies.set( cookieName, likedContent, { expires: 365 } );
-					console.log( res );
+					//console.log( res );
 				} else {
-					console.log( res );
+					//console.log( res );
 				}
 			}).fail(function( xhr, textStatus, e ){
-				console.log( xhr.responseText );
+				//console.log( xhr.responseText );
 			});
 		}
 	});
