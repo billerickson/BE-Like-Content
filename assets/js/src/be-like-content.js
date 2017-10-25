@@ -5,7 +5,8 @@ jQuery(function($){
 	var cookieName = 'be_like_content';
 	var likedContent = Cookies.get( cookieName );
 	if( ! likedContent )
-		likedContent = [];
+		likedContent = {};
+	likedContent = JSON.parse( likedContent );
 
 	// Set active if already liked
 	$('.be-like-content').each(function(e){
@@ -33,7 +34,7 @@ jQuery(function($){
 					$(button).removeClass('liking').addClass('liked').find('.text').html(res.data);
 					var liking = false;
 					likedContent.push( post_id );
-					Cookies.set( cookieName, likedContent, { expires: 365 } );
+					Cookies.set( cookieName, JSON.stringify( likedContent ), { expires: 365 } );
 					//console.log( res );
 				} else {
 					//console.log( res );
