@@ -1,0 +1,12 @@
+.be-like-content span {
+	transition: all 0.3s ease-in-out;
+}
+
+.be-like-content .hover,
+.be-like-content:hover .text {
+	display: none;
+}
+
+.be-like-content:hover .hover {
+	display: inline;
+}

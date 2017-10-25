@@ -129,6 +129,21 @@ final class BE_Like_Content {
 	function scripts() {
 		wp_register_script( 'be-like-content', BE_LIKE_CONTENT_URL . '/assets/js/be-like-content.min.js', array( 'jquery' ), BE_LIKE_CONTENT_VERSION, true );
 		wp_localize_script( 'be-like-content', 'be_like_content', array( 'url' => admin_url( 'admin-ajax.php' ) ) );
+
+		wp_register_style( 'be-like-content', BE_LIKE_CONTENT_URL . '/assets/css/be-like-content.css', null, BE_LIKE_CONTENT_VERSION, 'screen' );
+	}
+
+	/**
+	 * Load Assets
+	 *
+	 */
+	function load_assets() {
+
+		wp_enqueue_script( 'be-like-content' );
+
+		if( apply_filters( 'be_like_content_load_css', true ) )
+			wp_enqueue_style( 'be-like-content' );
+
 	}
 
 	/**
@@ -167,7 +182,7 @@ final class BE_Like_Content {
 		if( !in_array( get_post_type(), $this->settings['post_types'] ) )
 			return;
 
-		wp_enqueue_script( 'be-like-content' );
+		$this->load_assets();
 		echo '<a href="#" class="be-like-content" data-post-id="' . get_the_ID() . '"><span class="text">' . $this->maybe_count( $this->settings['text'], get_the_ID() ) . '</span><span class="hover">' . $this->maybe_count( $this->settings['hover_text'], get_the_ID() ) . '</span></a>';
 	}
 
@@ -181,7 +196,7 @@ final class BE_Like_Content {
 		if( empty( $text ) || empty( $post_id ) )
 			return $text;
 
-		$count = $count ? $count : $this->count( $post_id );
+		$count = $count ? intval( $count ) : $this->count( $post_id );
 		return str_replace( '{count}', $count, $text );
 	}
 
