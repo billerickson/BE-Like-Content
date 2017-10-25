@@ -10,9 +10,6 @@ jQuery(function($){
 	// Set active if already liked
 	$('.be-like-content').each(function(e){
 		var post_id = $(this).data('post-id');
-		console.log( post_id );
-		console.log( likedContent );
-		console.log( likedContent.indexOf( post_id ) );
 		if( likedContent.indexOf( post_id ) != -1 )
 			$(this).addClass('liked');
 	});
@@ -23,7 +20,7 @@ jQuery(function($){
 		e.preventDefault();
 		var button = $(this);
 		var post_id = $(button).data('post-id');
-		if( ! liking && -1 == $.inArray( post_id, likedContent ) ) {
+		if( ! liking && -1 == likedContent.indexOf( post_id ) ) {
 
 			liking = true;
 			$(button).addClass('liking');
