@@ -4,9 +4,13 @@ jQuery(function($){
 
 	var cookieName = 'be_like_content';
 	var likedContent = Cookies.get( cookieName );
-	if( ! likedContent )
-		likedContent = {};
-	likedContent = JSON.parse( likedContent );
+	if( likedContent ) {
+		likedContent = JSON.parse( likedContent );
+	} else {
+		likedContent = [];
+	}
+
+	console.log( likedContent );
 
 	// Set active if already liked
 	$('.be-like-content').each(function(e){
