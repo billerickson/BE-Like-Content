@@ -197,6 +197,7 @@ final class BE_Like_Content {
 			return $text;
 
 		$count = $count ? intval( $count ) : $this->count( $post_id );
+		$count = apply_filters( 'be_like_content_display_count', $count );
 		return str_replace( '{count}', $count, $text );
 	}
 
