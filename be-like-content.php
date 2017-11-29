@@ -71,9 +71,24 @@ final class BE_Like_Content {
 	public static function instance() {
 		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof BE_Like_Content ) ) {
 			self::$instance = new BE_Like_Content;
+			self::$instance->constants();
 			add_action( 'init', array( self::$instance, 'init' ) );
 		}
 		return self::$instance;
+	}
+
+	/**
+	 * Constants
+	 *
+	 * @since 1.0.0
+	 */
+	function constants() {
+
+		// Version
+ 		define( 'BE_LIKE_CONTENT_VERSION', $this->version );
+
+ 		// Directory URL
+ 		define( 'BE_LIKE_CONTENT_URL', plugin_dir_url( __FILE__ ) );
 	}
 
 	/**
@@ -85,6 +100,7 @@ final class BE_Like_Content {
 
 		$this->settings = apply_filters( 'be_like_content_settings', $this->default_settings() );
 
+		add_action( 'wp_enqueue_scripts',             array( $this, 'scripts' ) );
 		add_action( 'wp_ajax_be_like_content',        array( $this, 'update_count' ) );
 		add_action( 'wp_ajax_nopriv_be_like_content', array( $this, 'update_count' ) );
 	}
@@ -102,6 +118,29 @@ final class BE_Like_Content {
 			'many' => '{count}',
 			'post_types' => array( 'post' ),
 		);
+	}
+
+	/**
+	 * Scripts
+	 *
+	 * @since 1.0.0
+	 */
+	function scripts() {
+
+		wp_register_script( 'be-like-content', BE_LIKE_CONTENT_URL . '/assets/js/be-like-content.min.js', array( 'jquery' ), BE_LIKE_CONTENT_VERSION, true );
+ 		wp_localize_script( 'be-like-content', 'be_like_content', array( 'url' => admin_url( 'admin-ajax.php' ) ) );
+
+	}
+
+	/**
+	 * Load Assets
+	 *
+	 * @since 1.0.0
+	 */
+	function load_assets() {
+
+		wp_enqueue_script( 'be-like-content' );
+
 	}
 
 	/**
@@ -140,6 +179,7 @@ final class BE_Like_Content {
 		if( ! is_singular() || !in_array( get_post_type(), $this->settings['post_types'] ) )
 			return;
 
+		$this->load_assets();
 		echo '<a href="#" class="be-like-content" data-post-id="' . get_the_ID() . '">' . $this->maybe_count( get_the_ID() ) . '</a>';
 	}
 

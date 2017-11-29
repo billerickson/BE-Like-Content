@@ -32,7 +32,7 @@ jQuery(function($){
 				action: 'be_like_content',
 				post_id: post_id,
 			};
-			$.post( ea.url, data, function(res){
+			$.post( be_like_content.url, data, function(res){
 				if( res.success ) {
 					$(button).removeClass('liking').addClass('liked').find('.text').html(res.data);
 					var liking = false;
