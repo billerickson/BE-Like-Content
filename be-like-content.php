@@ -71,25 +71,9 @@ final class BE_Like_Content {
 	public static function instance() {
 		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof BE_Like_Content ) ) {
 			self::$instance = new BE_Like_Content;
-			self::$instance->constants();
 			add_action( 'init', array( self::$instance, 'init' ) );
 		}
 		return self::$instance;
-	}
-
-	/**
-	 * Constants
-	 *
-	 * @since 1.0.0
-	 */
-	function constants() {
-
-		// Version
-		define( 'BE_LIKE_CONTENT_VERSION', $this->version );
-
-		// Directory URL
-		define( 'BE_LIKE_CONTENT_URL', plugin_dir_url( __FILE__ ) );
-
 	}
 
 	/**
@@ -101,7 +85,6 @@ final class BE_Like_Content {
 
 		$this->settings = apply_filters( 'be_like_content_settings', $this->default_settings() );
 
-		add_action( 'wp_enqueue_scripts',             array( $this, 'scripts' ) );
 		add_action( 'wp_ajax_be_like_content',        array( $this, 'update_count' ) );
 		add_action( 'wp_ajax_nopriv_be_like_content', array( $this, 'update_count' ) );
 	}
@@ -114,36 +97,11 @@ final class BE_Like_Content {
 	 */
 	function default_settings() {
 		return array(
-			'text' => '{count}',
-			'hover_text' => 'Like the post? Give it a +1',
-			'liked_text' => '{count}',
+			'zero' => 'Like the post? Give it a +1',
+			'one' => '{count}',
+			'many' => '{count}',
 			'post_types' => array( 'post' ),
 		);
-	}
-
-	/**
-	 * Scripts
-	 *
-	 * @since 1.0.0
-	 */
-	function scripts() {
-		wp_register_script( 'be-like-content', BE_LIKE_CONTENT_URL . '/assets/js/be-like-content.min.js', array( 'jquery' ), BE_LIKE_CONTENT_VERSION, true );
-		wp_localize_script( 'be-like-content', 'be_like_content', array( 'url' => admin_url( 'admin-ajax.php' ) ) );
-
-		wp_register_style( 'be-like-content', BE_LIKE_CONTENT_URL . '/assets/css/be-like-content.css', null, BE_LIKE_CONTENT_VERSION, 'screen' );
-	}
-
-	/**
-	 * Load Assets
-	 *
-	 */
-	function load_assets() {
-
-		wp_enqueue_script( 'be-like-content' );
-
-		if( apply_filters( 'be_like_content_load_css', true ) )
-			wp_enqueue_style( 'be-like-content' );
-
 	}
 
 	/**
@@ -166,7 +124,7 @@ final class BE_Like_Content {
 		$count++;
 		update_post_meta( $post_id, '_be_like_content', $count );
 
-		$data = $this->maybe_count( $this->settings['liked_text'], $post_id, $count );
+		$data = $this->maybe_count( $post_id, $count );
 		wp_send_json_success( $data );
 
 		wp_die();
@@ -179,11 +137,10 @@ final class BE_Like_Content {
 	 */
 	function display() {
 
-		if( !in_array( get_post_type(), $this->settings['post_types'] ) )
+		if( ! is_singular() || !in_array( get_post_type(), $this->settings['post_types'] ) )
 			return;
 
-		$this->load_assets();
-		echo '<a href="#" class="be-like-content" data-post-id="' . get_the_ID() . '"><span class="text">' . $this->maybe_count( $this->settings['text'], get_the_ID() ) . '</span><span class="hover">' . $this->maybe_count( $this->settings['hover_text'], get_the_ID() ) . '</span></a>';
+		echo '<a href="#" class="be-like-content" data-post-id="' . get_the_ID() . '">' . $this->maybe_count( get_the_ID() ) . '</a>';
 	}
 
 	/**
@@ -191,13 +148,14 @@ final class BE_Like_Content {
 	 *
 	 * @since 1.0.0
 	 */
-	function maybe_count( $text = '', $post_id = '', $count = false ) {
+	function maybe_count( $post_id = '', $count = false ) {
 
-		if( empty( $text ) || empty( $post_id ) )
-			return $text;
+		if( empty( $post_id ) )
+			return;
 
 		$count = $count ? intval( $count ) : $this->count( $post_id );
-		$count = apply_filters( 'be_like_content_display_count', $count );
+		$text = 0 == $count ? $this->settings['zero'] : _n( $this->settings['one'], $this->settings['many'], $count );
+		$text = apply_filters( 'be_like_content_display_count', $text );
 		return str_replace( '{count}', $count, $text );
 	}
 

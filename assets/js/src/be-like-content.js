@@ -2,6 +2,7 @@
 
 jQuery(function($){
 
+	// Get liked content
 	var cookieName = 'be_like_content';
 	var likedContent = Cookies.get( cookieName );
 	if( likedContent ) {
@@ -10,9 +11,7 @@ jQuery(function($){
 		likedContent = [];
 	}
 
-	console.log( likedContent );
-
-	// Set active if already liked
+	// Single post, set active if already liked
 	$('.be-like-content').each(function(e){
 		var post_id = $(this).data('post-id');
 		if( likedContent.indexOf( post_id ) != -1 )
@@ -33,7 +32,7 @@ jQuery(function($){
 				action: 'be_like_content',
 				post_id: post_id,
 			};
-			$.post( be_like_content.url, data, function(res){
+			$.post( ea.url, data, function(res){
 				if( res.success ) {
 					$(button).removeClass('liking').addClass('liked').find('.text').html(res.data);
 					var liking = false;
