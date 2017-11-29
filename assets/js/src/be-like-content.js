@@ -34,7 +34,7 @@ jQuery(function($){
 			};
 			$.post( be_like_content.url, data, function(res){
 				if( res.success ) {
-					$(button).removeClass('liking').addClass('liked').find('.text').html(res.data);
+					$(button).removeClass('liking').addClass('liked').html(res.data);
 					var liking = false;
 					likedContent.push( post_id );
 					Cookies.set( cookieName, JSON.stringify( likedContent ), { expires: 365 } );
